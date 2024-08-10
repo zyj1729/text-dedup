@@ -20,6 +20,7 @@ class IOArgs:
     split: str | None = None
     cache_dir: str = ".cache"
     revision: str | None = None
+    input_type: str | None = None
     use_auth_token: bool = False
     local: bool = False
     debug: bool = False
