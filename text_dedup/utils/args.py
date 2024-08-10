@@ -36,6 +36,7 @@ class IOArgs:
         @optgroup.option("--split", type=str, help="`split` in load_dataset", default=None)
         @optgroup.option("--cache_dir", type=str, help="`cache_dir` in load_dataset", default=".cache")
         @optgroup.option("--revision", type=str, help="`revision` in load_dataset", default=None)
+        @optgroup.option("--input_type", type=str, help="input file format (only option is tsv)", default=None)
         @optgroup.option(
             "--use_auth_token",
             help="To use auth token in load_dataset from HF Hub",
