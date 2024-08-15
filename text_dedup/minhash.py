@@ -17,7 +17,7 @@ import numpy as np
 from tqdm import tqdm
 
 from text_dedup import logger
-from text_dedup.utils import CLUSTER_COLUMN, INDEX_COLUMN, DisableReferenceCount, IOArgs, MetaArgs, MinHashArgs, Timer, UnionFind, load_hf_dataset, optimal_param, sha1_hash, xxh3_16hash, xxh3_32hash
+from text_dedup.utils import CLUSTER_COLUMN, INDEX_COLUMN, DisableReferenceCount, IOArgs, MetaArgs, MinHashArgs, Timer, UnionFind, load_hf_dataset, optimal_param, sha1_hash, xxh3_16hash, xxh3_32hash, ngrams
 
 SEED = 42
 RNG = np.random.RandomState(SEED)
