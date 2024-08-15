@@ -245,6 +245,7 @@ def main(
             LEN_EMBEDDED = len(embedded)
             NUM_SHARDS = np.ceil(LEN_EMBEDDED / meta_args.batch_size).astype(int)
 
+        clusters: List[Dict[str, Any]] = []
         with timer("Clustering"):
             edges = []
             for i in tqdm(
@@ -268,6 +269,22 @@ def main(
                 for cluster in table.values():
                     if len(cluster) <= 1:
                         continue
+                    if io_args.cluster:
+                        cluster_info = {
+                            "cluster": list(cluster),
+                            # "note_ids": [id2id[key] for key in cluster],
+                            "similarities": []
+                        }
+                        explored = set()
+                        for x in cluster:
+                            for y in cluster:
+                                if x != y and (y, x) not in explored:
+                                    sig1 = embedded[x][SIGNATURE_COLUMN]
+                                    sig2 = embedded[y][SIGNATURE_COLUMN]
+                                    similarity = jaccard_similarity(np.array(sig1), np.array(sig2))
+                                    cluster_info["similarities"].append((str(similarity), id2id[x], id2id[y]))
+                                    explored.add((x, y))
+                        clusters.append(cluster_info)
                     idx = min(cluster)
                     for x in cluster:
                         edges.append((x, idx))
@@ -297,6 +314,12 @@ def main(
             final_data.save_to_disk(io_args.output)
             if io_args.debug:
                 uf.dump(os.path.join(io_args.output, "uf.pkl"), id2id=id2id)
+
+            # Save clusters information
+            if io_args.cluster:
+                clusters_output_path = os.path.join(io_args.output, "clusters.json")
+                with open(clusters_output_path, "w") as f:
+                    json.dump(clusters, f, indent=2)
 
         with timer("Cleaning"):
             if io_args.clean_cache:

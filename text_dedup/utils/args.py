@@ -21,6 +21,7 @@ class IOArgs:
     cache_dir: str = ".cache"
     revision: str | None = None
     input_type: str | None = None
+    cluster: bool = False
     use_auth_token: bool = False
     local: bool = False
     debug: bool = False
@@ -38,6 +39,7 @@ class IOArgs:
         @optgroup.option("--cache_dir", type=str, help="`cache_dir` in load_dataset", default=".cache")
         @optgroup.option("--revision", type=str, help="`revision` in load_dataset", default=None)
         @optgroup.option("--input_type", type=str, help="input file format (only option is tsv)", default=None)
+        @optgroup.option("--cluster", help="output cluster", default=False)
         @optgroup.option(
             "--use_auth_token",
             help="To use auth token in load_dataset from HF Hub",
