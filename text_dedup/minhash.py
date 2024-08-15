@@ -6,7 +6,7 @@ from __future__ import annotations
 import multiprocessing as mp
 import os
 import random
-import re
+import json
 from collections import defaultdict
 from typing import Any, Callable, Dict, List, Tuple
 
@@ -16,20 +16,7 @@ import numpy as np
 from tqdm import tqdm
 
 from text_dedup import logger
-from text_dedup.utils import CLUSTER_COLUMN
-from text_dedup.utils import INDEX_COLUMN
-from text_dedup.utils import DisableReferenceCount
-from text_dedup.utils import IOArgs
-from text_dedup.utils import MetaArgs
-from text_dedup.utils import MinHashArgs
-from text_dedup.utils import Timer
-from text_dedup.utils import UnionFind
-from text_dedup.utils import load_hf_dataset
-from text_dedup.utils import ngrams
-from text_dedup.utils import optimal_param
-from text_dedup.utils import sha1_hash
-from text_dedup.utils import xxh3_16hash
-from text_dedup.utils import xxh3_32hash
+from text_dedup.utils import CLUSTER_COLUMN, INDEX_COLUMN, DisableReferenceCount, IOArgs, MetaArgs, MinHashArgs, Timer, UnionFind, load_hf_dataset, optimal_param, sha1_hash, xxh3_16hash, xxh3_32hash
 
 SEED = 42
 RNG = np.random.RandomState(SEED)
