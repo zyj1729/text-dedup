@@ -194,6 +194,8 @@ def main(
             false_negative_weight=0.5,
         )
 
+    print("B = " + str(B) + ", R = " + str(R))
+
     HASH_RANGES = [(i * R, (i + 1) * R) for i in range(B)]
     HASH_TABLES: list[dict[int, set]] = [defaultdict(set) for _ in range(B)]
 
