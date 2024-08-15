@@ -8,8 +8,7 @@ import os
 import random
 import re
 from collections import defaultdict
-from typing import Any
-from typing import Callable
+from typing import Any, Callable, Dict, List, Tuple
 
 import click
 import datasets
@@ -135,6 +134,17 @@ def embed_func(
     # it doesnt matter if it is there or not. github.com/ekzhu/datasketch/issues/114
     Hs: list[bytes] = [bytes(hashvalues[start:end].byteswap().data) for start, end in hashranges]
     return {SIGNATURE_COLUMN: Hs, INDEX_COLUMN: idx}
+
+def jaccard_similarity(sig1: List[bytes], sig2: List[bytes]) -> float:
+    # Convert each element back to an integer list and compare element-wise
+    arr1 = [int.from_bytes(s, 'big') for s in sig1]
+    arr2 = [int.from_bytes(s, 'big') for s in sig2]
+    
+    # Calculate intersection and union
+    intersection = sum(1 for a1, a2 in zip(arr1, arr2) if a1 == a2)
+    union = len(arr1)  # Total number of elements in the signatures
+    
+    return intersection / union
 
 
 @click.command
