@@ -28,6 +28,9 @@ def load_hf_dataset(io_args: IOArgs, meta_args: MetaArgs) -> Dataset:
         if io_args.input_type == "tsv":
             ds = load_dataset('csv', data_files={'train': io_args.data_files}, delimiter = "\t")
             ds = ds["train"]
+        elif io_args.input_type == "csv":
+            ds = load_dataset('csv', data_files={'train': io_args.data_files})
+            ds = ds["train"]
         else:
             ds = load_from_disk(io_args.path)
     else:
