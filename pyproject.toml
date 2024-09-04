@@ -27,7 +27,6 @@ fire = "^0.6.0"
 click = "^8.1.7"
 click-option-group = "^0.5.6"
 rich = "^13.7.1"
-unisim = "^0.0.1"
 tensorflow = "^2.16.1"
 
 [tool.poetry.group.dev.dependencies]
