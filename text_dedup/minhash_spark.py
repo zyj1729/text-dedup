@@ -358,6 +358,7 @@ if __name__ == "__main__":  # pragma: no cover
     parser.add_argument("--r", type=int, default=None, help="Number of rows per band")
     parser.add_argument("--column", "-c", type=str, default="content", help="Column to deduplicate on")
     parser.add_argument("--index", type=str, default=None, help="Column to index on")
+    parser.add_argument("--type", type=str, default="parquet", help="Type of input file (parquet, tsv, or csv)")
     parser.add_argument(
         "--output",
         "-o",
@@ -417,15 +418,43 @@ if __name__ == "__main__":  # pragma: no cover
 
     # region: Data Loading
     # persist justification: this data will be needed when removing duplicates
-    df: DataFrame = (
-        spark.read.option("mergeSchema", "true")
-        .parquet(args.input)
-        .filter(
-            udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
+    if args.type == "parquet":
+        df: DataFrame = (
+            spark.read.option("mergeSchema", "true")
+            .parquet(args.input)
+            .filter(
+                udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
+            )
+            .withColumn("__id__", F.monotonically_increasing_id())
+            .persist(pyspark.StorageLevel.DISK_ONLY)
         )
-        .withColumn("__id__", F.monotonically_increasing_id())
-        .persist(pyspark.StorageLevel.DISK_ONLY)
-    )
+    elif args.type == "tsv":
+        # Load and process TSV data
+        df: DataFrame = (
+            spark.read.option("header", "true")  # Assumes the TSV has a header row
+            .option("sep", "\t")  # Specifies that the input file is TSV (tab-separated)
+            .option("inferSchema", "true")  # Optionally infer schema, can be removed if not needed
+            .csv(args.input)  # Use .csv() for TSV, specifying the delimiter above
+            .filter(
+                udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
+            )
+            .withColumn("__id__", F.monotonically_increasing_id())
+            .persist(pyspark.StorageLevel.DISK_ONLY)
+        )
+    elif args.type == "csv":
+        # Load and process TSV data
+        df: DataFrame = (
+            spark.read.option("header", "true")  # Assumes the TSV has a header row
+            .option("sep", ",")  # Specifies that the input file is TSV (tab-separated)
+            .option("inferSchema", "true")  # Optionally infer schema, can be removed if not needed
+            .csv(args.input)  # Use .csv() for TSV, specifying the delimiter above
+            .filter(
+                udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
+            )
+            .withColumn("__id__", F.monotonically_increasing_id())
+            .persist(pyspark.StorageLevel.DISK_ONLY)
+        )
+    
     # persist trigger
     DATA_SIZE: int = df.count()
     log.debug("-" * 120)
