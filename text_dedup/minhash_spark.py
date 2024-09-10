@@ -431,15 +431,12 @@ if __name__ == "__main__":  # pragma: no cover
     elif args.type == "tsv":
         # Load and process TSV data
         df: DataFrame = (
-            spark.read.option("header", "true")  # Assumes the TSV has a header row
-            .option("sep", "\t")  # Specifies that the input file is TSV (tab-separated)
-            .option("inferSchema", "true")  # Optionally infer schema, can be removed if not needed
-            .csv(args.input)  # Use .csv() for TSV, specifying the delimiter above
-            .filter(
-                udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
-            )
-            .withColumn("__id__", F.monotonically_increasing_id())
-            .persist(pyspark.StorageLevel.DISK_ONLY)
+            spark.read.load(args.input, format = args.type, sep="\t", inferSchema="true", header="true")
+            # .filter(
+            #     udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
+            # )
+            # .withColumn("__id__", F.monotonically_increasing_id())
+            # .persist(pyspark.StorageLevel.DISK_ONLY)
         )
     elif args.type == "csv":
         # Load and process TSV data
