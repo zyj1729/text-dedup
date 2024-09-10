@@ -431,7 +431,7 @@ if __name__ == "__main__":  # pragma: no cover
     elif args.type == "tsv":
         # Load and process TSV data
         df: DataFrame = (
-            spark.read.load(args.input, format = args.type, sep="\t", inferSchema="true", header="true")
+            spark.read.load("csv", format = args.type, sep="\t", inferSchema="true", header="true")
             # .filter(
             #     udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
             # )
