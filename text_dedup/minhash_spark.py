@@ -432,8 +432,9 @@ if __name__ == "__main__":  # pragma: no cover
         # Load and process TSV data
         df: DataFrame = (
             # spark.read.load(args.input, format = "csv", sep="\t", inferSchema="true", header="true")
-            spark.read.option("mergeSchema", "true")
+            spark.read.option("header", "true")
             .option("sep", "\t")  # Specifies that the input file is TSV (tab-separated)
+            # .option("mergeSchema", "true")
             .option("inferSchema", "true")  # Optionally infer schema, can be removed if not needed
             .csv(args.input)
             .filter(
