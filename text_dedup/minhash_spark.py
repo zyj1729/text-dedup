@@ -444,7 +444,7 @@ if __name__ == "__main__":  # pragma: no cover
             .persist(pyspark.StorageLevel.DISK_ONLY)
         )
     elif args.type == "csv":
-        # Load and process TSV data
+        # Load and process CSV data
         df: DataFrame = (
             spark.read.option("header", "true")  # Assumes the TSV has a header row
             .option("sep", ",")  # Specifies that the input file is TSV (tab-separated)
@@ -456,7 +456,18 @@ if __name__ == "__main__":  # pragma: no cover
             .withColumn("__id__", F.monotonically_increasing_id())
             .persist(pyspark.StorageLevel.DISK_ONLY)
         )
-    
+    elif args.type == "json":
+        # Read JSON data
+        df: DataFrame = (
+            spark.read.option("multiline", "false")  # Assumes each line is a separate JSON object
+            .json(args.input)  # Read the JSON file
+            .filter(
+                udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
+            )
+            .withColumn("__id__", F.monotonically_increasing_id())  # Add a unique ID to each row
+            .persist(pyspark.StorageLevel.DISK_ONLY)
+        )
+
     # persist trigger
     DATA_SIZE: int = df.count()
     log.debug("Using B={}, R={}".format(B, R))
