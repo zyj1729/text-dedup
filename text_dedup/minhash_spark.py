@@ -467,17 +467,7 @@ if __name__ == "__main__":  # pragma: no cover
             .withColumn("__id__", F.monotonically_increasing_id())  # Add a unique ID to each row
             .persist(pyspark.StorageLevel.DISK_ONLY)
         )
-    elif args.type == "json.gz":
-        # Read JSON data from a gzipped file
-        df: DataFrame = (
-            spark.read.option("multiline", "false")  # Assumes each line is a separate JSON object
-            .json(args.input, compression="gzip")  # Read the gzipped JSON file
-            .filter(
-                udf(ngrams_length_check, BooleanType())(F.col(args.column), F.lit(args.ngram_size), F.lit(args.min_length))
-            )
-            .withColumn("__id__", F.monotonically_increasing_id())  # Add a unique ID to each row
-            .persist(pyspark.StorageLevel.DISK_ONLY)
-        )
+
 
     # persist trigger
     DATA_SIZE: int = df.count()
