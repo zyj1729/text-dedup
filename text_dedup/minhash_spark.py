@@ -549,6 +549,7 @@ if __name__ == "__main__":  # pragma: no cover
     # endregion
 
     if args.debug:
+        log.debug(f"Saving cluster to: {f"{args.output}-assignment/assignment.parquet"}")
         # save assignment for debugging purposes
         assignment.write.parquet(f"{args.output}-assignment/assignment.parquet", mode="overwrite")
 
